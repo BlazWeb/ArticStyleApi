@@ -2,7 +2,7 @@
 
 Rest Api hecha en Go consumida por ArticStyle *(Microservices API)*.
 
-## Ejecución de la base de datos
+## Ejecución de Hola Mundo en Go
 ```golang
 package main
 
