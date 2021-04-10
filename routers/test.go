@@ -1,10 +1,10 @@
 package routers
 
-import ( 
+import (
 	"fmt"
 	"net/http"
 )
 
-func Index(w http.ResponseWriter, r *http.Request)  {
-	fmt.Fprintln(w, "Rest Api ArticStyles. Att: ArticDev")
+func Index(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Rest Api ArticStylses. Att: ArticDev")
 }
