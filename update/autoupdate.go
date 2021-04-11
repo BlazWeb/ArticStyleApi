@@ -1,49 +1,30 @@
 package update
 
 import (
-	"bufio"
-	"fmt"
 	"log"
-	"os"
+	"time"
 
 	"github.com/blang/semver"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
 
-const version = "0.0.5"
+const version = "0.1.5"
 
 func ConfirmAndSelfUpdate() {
-	latest, found, err := selfupdate.DetectLatest("Artic-Dev/ArticStyleApi")
-	if err != nil {
-		log.Println("Error occurred while detecting version:", err)
-		return
-	}
-
 	v := semver.MustParse(version)
-	if !found || latest.Version.LTE(v) {
-		log.Println("La versión actual es la más reciente " + version)
-		log.Println(latest)
-		return
-	}
-
-	fmt.Print("¿Quieres actualizar a la versión ", latest.Version, "? (y/n): ")
-	input, err := bufio.NewReader(os.Stdin).ReadString('\n')
-	if err != nil || (input != "y\n" && input != "n\n") {
-		log.Println("Solamente introduzca y o n")
-		return
-	}
-	if input == "n\n" {
-		return
-	}
-
-	exe, err := os.Executable()
+	latest, err := selfupdate.UpdateSelf(v, "Artic-Dev/ArticStyleApi")
 	if err != nil {
-		log.Println("No se ha podido encontrar la ruta del ejecutable")
+		log.Println("ArticDev -> Binary update failed:", err)
 		return
 	}
-	if err := selfupdate.UpdateTo(latest.AssetURL, exe); err != nil {
-		log.Println("Error al actualizar binario:", err)
-		return
+	if latest.Version.Equals(v) {
+		// latest version is the same as current version. It means current binary is up to date.
+		log.Println("ArticDev -> Estas en la última versión la ", version)
+	} else {
+		log.Println("ArticDev -> Actualización completada con éxito", latest.Version)
+		log.Println("ArticDev -> Notas del parche:\n", latest.ReleaseNotes)
+		time.Sleep(10 * time.Second)
+		log.Fatal("ArticDev -> Cerrando aplicacion...")
 	}
-	log.Println("Actualizado correctamente a la versión ", latest.Version)
+
 }

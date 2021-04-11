@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	handlers.Ascii()
 	update.ConfirmAndSelfUpdate()
 	_, err := db.FirtConnection()
 	if err != nil {
