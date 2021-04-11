@@ -22,14 +22,14 @@
         "Comments": "",
         "CompanyName": "Artic Solutions",
         "FileDescription": "Backend API REST - ArticStyles",
-        "FileVersion": "0.0.1",
+        "FileVersion": "1",
         "InternalName": "",
-        "LegalCopyright": "",
+        "LegalCopyright": "Copyright (C) 2021 Artic Solutions",
         "LegalTrademarks": "",
         "OriginalFilename": "",
         "PrivateBuild": "",
         "ProductName": "API Rest",
-        "ProductVersion": "v0.5.1",
+        "ProductVersion": "v0.1.5",
         "SpecialBuild": ""
     },
     "VarFileInfo": {
