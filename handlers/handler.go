@@ -12,14 +12,14 @@ import (
 
 func Controller() {
 	router := mux.NewRouter()
-
 	router.HandleFunc("/", routers.Index)
+	router.HandleFunc("/register", routers.RegisterUser).Methods("POST")
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
 	}
 
 	handlers := cors.AllowAll().Handler(router)
-	log.Println("Servidor funcionando por el puerto :"+PORT)
+	log.Println("Servidor funcionando por el puerto :" + PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT, handlers))
 }
