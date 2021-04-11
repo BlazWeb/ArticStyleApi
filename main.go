@@ -10,12 +10,8 @@ import (
 )
 
 func main() {
-	err := update.DoUpdate("https://github.com/Artic-Dev/ArticStyleApi.git")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	_, err = db.FirtConnection()
+	update.ConfirmAndSelfUpdate()
+	_, err := db.FirtConnection()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
