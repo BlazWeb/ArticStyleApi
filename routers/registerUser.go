@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Artic-Dev/ArticStyleApi-GO/db"
 	"github.com/Artic-Dev/ArticStyleApi-GO/db/inserts"
-	"github.com/Artic-Dev/ArticStyleApi-GO/helpers"
+	"github.com/Artic-Dev/ArticStyleApi-GO/db/users"
 	"github.com/Artic-Dev/ArticStyleApi-GO/models"
 )
 
@@ -36,17 +35,17 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "The password must be at least 6", 400)
 		return
 	}
-	res, err := helpers.CheckRealEmail(t.Email)
-	if err != nil {
-		http.Error(w, "Context error in: "+err.Error(), 400)
-		return
-	}
-	if res != "valid" {
-		http.Error(w, "The email is fake", 400)
-		return
-	}
+	// res, err := helpers.CheckRealEmail(t.Email)
+	// if err != nil {
+	// 	http.Error(w, "Context error in: "+err.Error(), 400)
+	// 	return
+	// }
+	// if res != "valid" {
+	// 	http.Error(w, "The email is fake", 400)
+	// 	return
+	// }
 	// Validacion de usuario inexistente
-	res, err = db.CheckUserName(t.Username)
+	res, err := users.CheckUserName(t.Username)
 	if err != nil {
 		http.Error(w, "Error check user: "+err.Error(), 400)
 		return
@@ -56,9 +55,8 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "User already", 400)
 		return
 	}
-
 	// Validate Email
-	res, err = db.CheckUserEmail(t.Email)
+	res, err = users.CheckUserEmail(t.Email)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

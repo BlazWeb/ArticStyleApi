@@ -13,7 +13,12 @@ import (
 func Controller() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", routers.Index)
+
+	// Rutas gestion de usuario
 	router.HandleFunc("/register", routers.RegisterUser).Methods("POST")
+	router.HandleFunc("/getuser/{id}", routers.GetUser).Methods("GET")
+
+	// Conexion API
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
