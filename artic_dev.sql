@@ -12,6 +12,26 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+-- Volcando estructura de base de datos para articstyle
+CREATE DATABASE IF NOT EXISTS `articstyle` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+USE `articstyle`;
+
+-- Volcando estructura para tabla articstyle.users
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(75) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `last_name` varchar(75) NOT NULL,
+  `date_registered` varchar(50) NOT NULL DEFAULT '',
+  `birthday` varchar(50) NOT NULL DEFAULT '',
+  `rank` int(11) DEFAULT 1,
+  `img` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '{"avatar":"default", "banner": "default"}' CHECK (json_valid(`img`)),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
+
 -- Volcando datos para la tabla articstyle.users: ~7 rows (aproximadamente)
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `name`, `last_name`, `date_registered`, `birthday`, `rank`, `img`) VALUES
