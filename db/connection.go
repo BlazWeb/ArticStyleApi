@@ -27,6 +27,7 @@ func checkParams() {
 	}
 	time.Sleep(1 * time.Second)
 	if db_addr == "" {
+		db_addr = "127.0.0.1"
 		fmt.Println("ArticDev -> Se requiere que pongas una IP, por defecto le asigno: 127.0.0.1 añada una variable de entorno DB_ADDR")
 	}
 	time.Sleep(2 * time.Second)

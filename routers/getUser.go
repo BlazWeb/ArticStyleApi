@@ -2,14 +2,12 @@ package routers
 
 import (
 	"encoding/json"
-	"net/http"
-
 	"fmt"
+	"net/http"
 
 	"github.com/Artic-Dev/ArticStyleApi-GO/db/users"
 	"github.com/Artic-Dev/ArticStyleApi-GO/helpers"
 	"github.com/gorilla/mux"
-
 	"github.com/nickname32/discordhook"
 )
 
@@ -18,14 +16,18 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	idAsString := mux.Vars(r)["id"]
 	id, err := helpers.StringToInt64(idAsString)
 	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		w.WriteHeader(http.StatusBadRequest)
 	}
 	user, err := users.CheckUserID(id)
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		json.NewEncoder(w).Encode(user)
+		w.WriteHeader(http.StatusAccepted)
 	}
 	wa, err := discordhook.NewWebhookAPI(830780006979993660, "8nuysp_AahT76Jc_oNtVSk5dub-grAo6hfw4Nkko9mC6fXDwEL9Gnkv9Kp1FNijeBMYm", true, nil)
 	if err != nil {

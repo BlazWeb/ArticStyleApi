@@ -19,6 +19,7 @@ func Controller() {
 	// Rutas gestion de usuario
 	router.HandleFunc("/register", routers.RegisterUser).Methods("POST")
 	router.HandleFunc("/getuser/{id}", routers.GetUser).Methods("GET")
+	router.HandleFunc("/getuser/{id}", routers.DelUser).Methods("DELETE")
 
 	// Conexion API
 	PORT := os.Getenv("PORT")
