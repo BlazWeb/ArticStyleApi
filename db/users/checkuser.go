@@ -1,6 +1,9 @@
 package users
 
 import (
+	"database/sql"
+	"log"
+
 	"github.com/Artic-Dev/ArticStyleApi-GO/db"
 	"github.com/Artic-Dev/ArticStyleApi-GO/models"
 )
@@ -15,7 +18,11 @@ func CheckUserEmail(email string) (string, error) {
 	row := db.QueryRow("SELECT email FROM users WHERE email = ?", email)
 	err = row.Scan(&u.Email)
 	if err != nil {
-		return "1", nil
+		if err == sql.ErrNoRows {
+			return "1", nil
+		}
+		log.Println(err)
+		return "0", err
 	}
 	return "0", nil
 }
@@ -30,7 +37,10 @@ func CheckUserName(user string) (string, error) {
 	row := db.QueryRow("SELECT username FROM users WHERE username = ?", user)
 	err = row.Scan(&u.Username)
 	if err != nil {
-		return "valid", nil
+		if err == sql.ErrNoRows {
+			return "valid", nil
+		}
+		return "no_valid", err
 	}
 	return "no_valid", nil
 }

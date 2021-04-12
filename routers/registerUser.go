@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Artic-Dev/ArticStyleApi-GO/db/inserts"
 	"github.com/Artic-Dev/ArticStyleApi-GO/db/users"
 	"github.com/Artic-Dev/ArticStyleApi-GO/models"
 )
@@ -67,7 +66,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insertar en Base de Datos
-	status, err := inserts.InsertRegisterUser(t.Username, t.Email, t.Name, t.LastName, t.Password)
+	status, err := users.InsertRegisterUser(t.Username, t.Email, t.Name, t.LastName, t.Password)
 	if err != nil {
 		http.Error(w, "Error: "+err.Error(), 400)
 		return

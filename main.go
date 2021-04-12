@@ -2,7 +2,9 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"github.com/Artic-Dev/ArticStyleApi-GO/db"
 	"github.com/Artic-Dev/ArticStyleApi-GO/handlers"
@@ -12,10 +14,11 @@ import (
 func main() {
 	handlers.Ascii()
 	update.ConfirmAndSelfUpdate()
-	_, err := db.FirtConnection()
+	err := db.FirtConnection()
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		log.Println(err.Error())
+		time.Sleep(4 * time.Second)
+		os.Exit(1)
 	}
 	handlers.Controller()
 }

@@ -41,16 +41,20 @@ func checkParams() {
 	time.Sleep(2 * time.Second)
 }
 
-func FirtConnection() (*sql.DB, error) {
+func FirtConnection() error {
 	checkParams()
 	s := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", db_user, db_password, db_addr, db_name)
 	db, err := sql.Open("mysql", s)
 	fmt.Println("ArticDev -> " + s)
 	if err != nil {
-		log.Fatal(err)
+		return err
+	}
+	_, err = db.Query("SELECT * FROM information_schema.tables WHERE table_schema = ?", db_name)
+	if err != nil {
+		return err
 	}
 	fmt.Println("ArticDev -> Conexion exitosa con la base de datos")
-	return db, nil
+	return nil
 }
 
 func GetDB() (*sql.DB, error) {
