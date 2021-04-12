@@ -12,9 +12,10 @@ import (
 )
 
 func Controller() {
-	router := mux.NewRouter()
-	router.HandleFunc("/", routers.Index)
+	r := mux.NewRouter()
 
+	router := r.PathPrefix("/api").Subrouter()
+	router.HandleFunc("/", routers.Index)
 	// Rutas gestion de usuario
 	router.HandleFunc("/register", routers.RegisterUser).Methods("POST")
 	router.HandleFunc("/getuser/{id}", routers.GetUser).Methods("GET")
