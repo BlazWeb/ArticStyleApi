@@ -49,7 +49,7 @@ func FirtConnection() (*sql.DB, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("ArticDev -> Conexin exitosa con la base de datos")
+	fmt.Println("ArticDev -> Conexion exitosa con la base de datos")
 	return db, nil
 }
 
