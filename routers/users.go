@@ -55,11 +55,14 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user, err := users.CheckUserIDEspecial(id)
+	//userF := users.CheckUserFollowers(user.Id)
+
 	if err != nil {
 		send := sendmessage{err.Error(), false}
 		json.NewEncoder(w).Encode(send)
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
+		//json.NewEncoder(w).Encode(user)
 		json.NewEncoder(w).Encode(user)
 		w.WriteHeader(http.StatusAccepted)
 	}
@@ -243,4 +246,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Expires: expirationTime,
 	})
 
+}
+
+func UserFollowers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	idAsString := mux.Vars(r)["id"]
+	id, err := helpers.StringToInt64(idAsString)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	err = users.CheckUserID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"No tiene seguidores", false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	userF := users.CheckUserFollowers(id)
+	json.Marshal(userF)
+	json.NewEncoder(w).Encode(userF)
+	w.WriteHeader(http.StatusAccepted)
 }

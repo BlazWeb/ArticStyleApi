@@ -19,13 +19,17 @@ func Controller() {
 	router.HandleFunc("/", routers.Index)
 	// Rutas gestion de usuario
 	router.HandleFunc("/user", routers.RegisterUser).Methods("POST")
-	router.HandleFunc("/user/{id}", middlewares.ValidateJWT(routers.GetUser)).Methods("GET")
+	router.HandleFunc("/user/{id}", routers.GetUser).Methods("GET")
+	router.HandleFunc("/user/followers/{id}", routers.UserFollowers).Methods("GET")
 	router.HandleFunc("/user/{id}", middlewares.ValidateJWT(routers.DelUser)).Methods("DELETE")
 	router.HandleFunc("/auth", routers.Login).Methods("POST")
 
-	// Rutas gestion de estilos
+	// Rutas gestion de estilos creados
 	router.HandleFunc("/create-style/{iduser}", routers.RegisterStyle).Methods("POST")
+	router.HandleFunc("/save-style", routers.StyleSave).Methods("POST")
+	router.HandleFunc("/style-user/{iduser}", routers.GetStylesSavedUser).Methods("GET")
 	router.HandleFunc("/style/{id}", routers.GetStyle).Methods("GET")
+	router.HandleFunc("/styles/{id}", routers.GetStylesUser).Methods("GET")
 
 	// Conexion API
 	PORT := os.Getenv("PORT")

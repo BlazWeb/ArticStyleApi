@@ -79,6 +79,27 @@ func CheckUserIDEspecial(id int64) (models.User, error) {
 	return u, nil
 }
 
+func CheckUserFollowers(id int64) []models.UserFollower {
+	db, err := db.GetDB()
+	u := []models.UserFollower{}
+	if err != nil {
+		return u
+	}
+	rows, err := db.Query("SELECT id, author_id, follower_id FROM followers WHERE author_id = ?", id)
+	if err != nil {
+		return u
+	}
+	for rows.Next() {
+		var t models.UserFollower
+		err = rows.Scan(&t.Id, &t.Author, &t.Follower)
+		if err != nil {
+			return u
+		}
+		u = append(u, t)
+	}
+	return u
+}
+
 func CheckUserExists(user string) (models.User, error, bool) {
 	db, err := db.GetDB()
 	var u models.User

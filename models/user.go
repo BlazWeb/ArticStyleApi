@@ -36,6 +36,13 @@ type User struct {
 	Email          string   `json:"email,omitempty"`
 	Rank           int      `json:"rank,omitempty"`
 	Img            UserJSON `json:"img,omitempty"`
+	Followers      UserJSON `json:"followers,omitempty"`
+}
+
+type UserFollower struct {
+	Id       int64 `json:"id,omitempty"`
+	Author   int   `json:"author,omitempty"`
+	Follower int   `json:"Follower,omitempty"`
 }
 
 /*RespuestaLogin tiene el token que se devuelve con el login */

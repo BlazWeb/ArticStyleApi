@@ -114,7 +114,7 @@ func RegisterStyle(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetStyle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json, multipart/form-data")
+	w.Header().Set("Content-Type", "application/json")
 	// Obtiene la ID del usuario mediante la URL
 	idString := mux.Vars(r)["id"]
 
@@ -122,9 +122,103 @@ func GetStyle(w http.ResponseWriter, r *http.Request) {
 	id, err := helpers.StringToInt64(idString)
 
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
 	}
 	style, err := styles.CheckStyleID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		if err == sql.ErrNoRows {
+			send = sendmessage{"No se encontró ningún estilo", false}
+		}
+		json.NewEncoder(w).Encode(send)
+	}
+
+	// Imprime el estilo por pantalla
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(style)
+}
+
+func GetStylesUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	// Obtiene la ID del usuario mediante la URL
+	idString := mux.Vars(r)["id"]
+
+	// Convierte la ID en un int
+	id, err := helpers.StringToInt64(idString)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	style, err := styles.GetStyleAll(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		if err == sql.ErrNoRows {
+			send = sendmessage{"No se encontró ningún estilo", false}
+		}
+		json.NewEncoder(w).Encode(send)
+	}
+
+	// Imprime el estilo por pantalla
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(style)
+}
+
+func StyleSave(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json, multipart/form-data")
+	// Saco el Form
+	r.ParseMultipartForm(32 << 20)
+	idUserString := r.PostFormValue("user")
+	idStyleString := r.PostFormValue("style")
+	if idUserString == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"Field user is empty", false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	if idStyleString == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"Field style is empty", false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	idUser, _ := helpers.StringToInt64(idUserString)
+	idStyle, _ := helpers.StringToInt64(idStyleString)
+
+	err := styles.SaveStyleDB(idUser, idStyle)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	send := sendmessage{"Se ha guardado satisfactoriamente", true}
+	json.NewEncoder(w).Encode(send)
+}
+
+func GetStylesSavedUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	// Obtiene la ID del usuario mediante la URL
+	idString := mux.Vars(r)["iduser"]
+
+	// Convierte la ID en un int
+	id, err := helpers.StringToInt64(idString)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	style, err := styles.GetStyleSavedAll(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{err.Error(), false}
