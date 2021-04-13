@@ -12,3 +12,8 @@ type User struct {
 	Rank           int    `json:"rank,omitempty"`
 	Img            string `json:"img,omitempty"`
 }
+
+/*RespuestaLogin tiene el token que se devuelve con el login */
+type RespuestaLogin struct {
+	Token string `json:"token,omitempty"`
+}

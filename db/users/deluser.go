@@ -5,7 +5,7 @@ import (
 )
 
 func DelUser(id int64) error {
-	err := CheckUser(id)
+	err := CheckUserID(id)
 	if err != nil {
 		return err
 	}
@@ -14,5 +14,5 @@ func DelUser(id int64) error {
 		return err
 	}
 	_, err = db.Exec("DELETE FROM users WHERE id = ?", id)
-	return nil
+	return err
 }

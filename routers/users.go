@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
+	"time"
+
+	"github.com/Artic-Dev/ArticStyleApi-GO/jwt"
 
 	"github.com/Artic-Dev/ArticStyleApi-GO/db/users"
 	"github.com/Artic-Dev/ArticStyleApi-GO/helpers"
@@ -51,7 +54,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	user, err := users.CheckUserID(id)
+	user, err := users.CheckUserIDEspecial(id)
 	if err != nil {
 		send := sendmessage{err.Error(), false}
 		json.NewEncoder(w).Encode(send)
@@ -143,7 +146,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Validacion de usuario inexistente
-	res, err = users.CheckUserName(t.Username)
+	res, err = users.CheckUserNameEspecial(t.Username)
 	if err != nil {
 		send := sendmessage{"Error check user: " + err.Error(), false}
 		json.NewEncoder(w).Encode(send)
@@ -189,5 +192,55 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	// Finalización exitosa
 	w.WriteHeader(http.StatusCreated)
+
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json, multipart/form-data")
+	// Saco el Form
+	r.ParseMultipartForm(32 << 20)
+	user := r.PostFormValue("user")
+	pass := r.PostFormValue("password")
+	if user == "" {
+		send := sendmessage{"El campo de usuario es obligatorio", false}
+		json.NewEncoder(w).Encode(send)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if pass == "" {
+		send := sendmessage{"El campo de contraseña es obligatorio", false}
+		json.NewEncoder(w).Encode(send)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var u models.User
+	u, err := users.CheckUserLogin(user, pass)
+	if err != nil {
+		send := sendmessage{"El usuario y/o contraseña no existe", false}
+		json.NewEncoder(w).Encode(send)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	jwtKey, err := jwt.TokenJWT(u)
+	if err != nil {
+		http.Error(w, "Ocurrió un error al intentar general el Token correspondiente "+err.Error(), 400)
+		return
+	}
+
+	resp := models.RespuestaLogin{
+		Token: jwtKey,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(resp)
+
+	expirationTime := time.Now().Add(24 * time.Hour)
+	http.SetCookie(w, &http.Cookie{
+		Name:    "token",
+		Value:   jwtKey,
+		Expires: expirationTime,
+	})
 
 }

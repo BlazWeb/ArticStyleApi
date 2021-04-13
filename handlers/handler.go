@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Artic-Dev/ArticStyleApi-GO/middlewares"
 	"github.com/Artic-Dev/ArticStyleApi-GO/routers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -18,8 +19,9 @@ func Controller() {
 	router.HandleFunc("/", routers.Index)
 	// Rutas gestion de usuario
 	router.HandleFunc("/user", routers.RegisterUser).Methods("POST")
-	router.HandleFunc("/user/{id}", routers.GetUser).Methods("GET")
-	router.HandleFunc("/user/{id}", routers.DelUser).Methods("DELETE")
+	router.HandleFunc("/user/{id}", middlewares.ValidateJWT(routers.GetUser)).Methods("GET")
+	router.HandleFunc("/user/{id}", middlewares.ValidateJWT(routers.DelUser)).Methods("DELETE")
+	router.HandleFunc("/auth", routers.Login).Methods("POST")
 
 	// Rutas gestion de estilos
 	router.HandleFunc("/create-style/{iduser}", routers.RegisterStyle).Methods("POST")

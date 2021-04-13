@@ -28,7 +28,7 @@ func RegisterStyle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validación de usuario existente
-	err = users.CheckUser(id)
+	err = users.CheckUserID(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{err.Error(), false}
