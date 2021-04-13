@@ -112,3 +112,29 @@ func RegisterStyle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(send)
 
 }
+
+func GetStyle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json, multipart/form-data")
+	// Obtiene la ID del usuario mediante la URL
+	idString := mux.Vars(r)["id"]
+
+	// Convierte la ID en un int
+	id, err := helpers.StringToInt64(idString)
+
+	if err != nil {
+		panic(err)
+	}
+	style, err := styles.CheckStyleID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		if err == sql.ErrNoRows {
+			send = sendmessage{"No se encontró ningún estilo", false}
+		}
+		json.NewEncoder(w).Encode(send)
+	}
+
+	// Imprime el estilo por pantalla
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(style)
+}

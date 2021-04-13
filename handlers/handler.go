@@ -25,6 +25,7 @@ func Controller() {
 
 	// Rutas gestion de estilos
 	router.HandleFunc("/create-style/{iduser}", routers.RegisterStyle).Methods("POST")
+	router.HandleFunc("/style/{id}", routers.GetStyle).Methods("GET")
 
 	// Conexion API
 	PORT := os.Getenv("PORT")
