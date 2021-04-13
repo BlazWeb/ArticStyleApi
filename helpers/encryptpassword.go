@@ -7,3 +7,9 @@ func EncryptPassword(pass string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(pass), cost)
 	return string(bytes), err
 }
+
+func EncryptHash(s string) (string, error) {
+	cost := 1
+	bytes, err := bcrypt.GenerateFromPassword([]byte(s), cost)
+	return string(bytes), err
+}

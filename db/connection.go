@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-
 	"os"
 	"time"
 
@@ -21,9 +20,14 @@ var (
 
 func checkParams() {
 	if db_name == "" {
-		fmt.Println("ArticDev -> Obligatorio establecer DB_TABLE, para table de la base de datos")
-		time.Sleep(4 * time.Second)
-		log.Fatal("ArticDev -> Cerrando programa....")
+		fmt.Println("ArticDev -> Es necesario introducir la variable de entorno DB_TABLE:")
+		var dato_db_name string
+		fmt.Scanln(&dato_db_name)
+
+		if dato_db_name != "" {
+			db_name = dato_db_name
+			os.Setenv("DB_TABLE", dato_db_name)
+		}
 	}
 	time.Sleep(1 * time.Second)
 	if db_addr == "" {
