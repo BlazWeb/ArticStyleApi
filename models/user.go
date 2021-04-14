@@ -36,7 +36,10 @@ type User struct {
 	Email          string   `json:"email,omitempty"`
 	Rank           int      `json:"rank,omitempty"`
 	Img            UserJSON `json:"img,omitempty"`
-	Followers      UserJSON `json:"followers,omitempty"`
+	// Img struct {
+	// 	Avatar string `json:"avatar"`
+	// 	Banner string  `json:"banner"`
+	// }	`json:"img"`
 }
 
 type UserFollower struct {
