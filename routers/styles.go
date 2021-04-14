@@ -226,6 +226,7 @@ func GetStylesSavedUser(w http.ResponseWriter, r *http.Request) {
 			send = sendmessage{"No se encontró ningún estilo", false}
 		}
 		json.NewEncoder(w).Encode(send)
+		return
 	}
 
 	// Imprime el estilo por pantalla

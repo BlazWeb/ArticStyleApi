@@ -31,6 +31,12 @@ func Controller() {
 	router.HandleFunc("/style/{id}", routers.GetStyle).Methods("GET")
 	router.HandleFunc("/styles/{id}", routers.GetStylesUser).Methods("GET")
 
+	// Rutas gestion de post
+	router.HandleFunc("/create-post", routers.CreatePost).Methods("POST")
+	router.HandleFunc("/posts-profile", routers.GetPostsProfile).Methods("GET")
+
+	// Filtros explorador de estilos
+
 	// Conexion API
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
