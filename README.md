@@ -15,5 +15,6 @@ DB_USER // En esta pondremos el usuario de la base de datos, por defecto queda a
 DB_PASS // En esta pondremos la contraseña para poder acceder a la base de datos
 ```
 
-## ¿Cómo funciona?
-Esto es una prueba de **README**
+## ¿Auto Compilador?
+- > Utilizamos el comando `CompileDeamon`
+- > Posteriormente utilizamos `CompileDeamon -command="main.exe"`
