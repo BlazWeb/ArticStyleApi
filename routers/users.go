@@ -85,56 +85,59 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	valid := regexp.MustCompile("^[A0-Za9-zñ]*$")
 	// Validación de datos recibidos
 	if len(t.Username) < 4 {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"Minimo cuatro carácteres", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if len(t.Email) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"The field Email is required", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if len(t.Name) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"The field Name is required", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if len(t.LastName) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"The field Last Name is required", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if len(t.Password) < 6 {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"The field Password is required", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	// Comprobación si hay existencia de carácteres inválidos
 	check := valid.MatchString(t.Username)
 	if !check {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"Carácteres inválidos", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
 	check = validSpace.MatchString(t.Name)
 	if !check {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"Carácteres inválidos", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
 	check = validSpace.MatchString(t.LastName)
 	if !check {
 		send := sendmessage{"Carácteres inválidos", false}
-		json.NewEncoder(w).Encode(send)
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(send)
+
 		return
 	}
 
@@ -144,6 +147,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if res != "valid" {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"The email is fake", false}
 		json.NewEncoder(w).Encode(send)
 		return
@@ -152,23 +156,25 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	res, err = users.CheckUserNameEspecial(t.Username)
 	if err != nil {
 		send := sendmessage{"Error check user: " + err.Error(), false}
-		json.NewEncoder(w).Encode(send)
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(send)
+
 		return
 	}
 
 	if res == "no_valid" {
 		send := sendmessage{"User allready", false}
-		json.NewEncoder(w).Encode(send)
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(send)
+
 		return
 	}
 	// Validate Email
 	res, err = users.CheckUserEmail(t.Email)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{err.Error(), false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if res == "0" {
@@ -181,15 +187,15 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// Insertar en Base de Datos
 	status, err := users.InsertRegisterUser(t.Username, t.Email, t.Name, t.LastName, t.Password)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"Error: " + err.Error(), false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if !status {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"No se ha logrado registrar el usuario", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -205,15 +211,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	user := r.PostFormValue("user")
 	pass := r.PostFormValue("password")
 	if user == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"El campo de usuario es obligatorio", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if pass == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"El campo de contraseña es obligatorio", false}
 		json.NewEncoder(w).Encode(send)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	var u models.User

@@ -1,0 +1,5 @@
+.env
+compress/
+icon.ico
+*.syso
+versioninfo.json
