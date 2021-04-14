@@ -26,16 +26,19 @@ func (u *UserJSON) Value() (driver.Value, error) {
 }
 
 type User struct {
-	Id             int64    `json:"id,omitempty"`
-	Username       string   `json:"username,omitempty"`
-	Name           string   `json:"name,omitempty"`
-	LastName       string   `json:"last_name,omitempty"`
-	DateRegistered string   `json:"date_registered,omitempty"`
-	Birthday       string   `json:"birthday,omitempty"`
-	Password       string   `json:"password,omitempty"`
-	Email          string   `json:"email,omitempty"`
-	Rank           int      `json:"rank,omitempty"`
-	Img            UserJSON `json:"img,omitempty"`
+	Id             int64  `json:"id,omitempty"`
+	Username       string `json:"username,omitempty"`
+	Name           string `json:"name,omitempty"`
+	LastName       string `json:"last_name,omitempty"`
+	DateRegistered string `json:"date_registered,omitempty"`
+	Birthday       string `json:"birthday,omitempty"`
+	Password       string `json:"password,omitempty"`
+	Email          string `json:"email,omitempty"`
+	Rank           int    `json:"rank,omitempty"`
+	IP             string `json:"ip,omitempty"`
+	LastIP         string `json:"last_ip,omitempty"`
+	Avatar         string `json:"avatar,omitempty"`
+	Banner         string `json:"banner,omitempty"`
 	// Img struct {
 	// 	Avatar string `json:"avatar"`
 	// 	Banner string  `json:"banner"`

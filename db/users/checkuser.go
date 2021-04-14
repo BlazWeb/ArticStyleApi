@@ -67,8 +67,9 @@ func CheckUserIDEspecial(id int64) (models.User, error) {
 	if err != nil {
 		return u, err
 	}
-	row := db.QueryRow("SELECT id, username, password, email, name, last_name, img, birthday, date_registered, rank FROM users WHERE id = ?", id)
-	err = row.Scan(&u.Id, &u.Username, &u.Password, &u.Email, &u.Name, &u.LastName, &u.Img, &u.Birthday, &u.DateRegistered, &u.Rank)
+	s := `SELECT * FROM users WHERE id=?;`
+	row := db.QueryRow(s, id)
+	err = row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.Name, &u.LastName, &u.DateRegistered, &u.Birthday, &u.Rank, &u.IP, &u.LastIP, &u.Avatar, &u.Banner)
 	//err = row.Scan(&u.Id, &u.Name)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -106,8 +107,8 @@ func CheckUserExists(user string) (models.User, error, bool) {
 	if err != nil {
 		return u, err, false
 	}
-	row := db.QueryRow("SELECT id, username, password, email, name, last_name, img, birthday, date_registered, rank FROM users WHERE username = ?", user)
-	err = row.Scan(&u.Id, &u.Username, &u.Password, &u.Email, &u.Name, &u.LastName, &u.Img, &u.Birthday, &u.DateRegistered, &u.Rank)
+	row := db.QueryRow("SELECT * FROM users WHERE username = ?", user)
+	err = row.Scan(&u.Id, &u.Email, &u.Username, &u.Password, &u.Name, &u.LastName, &u.DateRegistered, &u.Birthday, &u.Rank, &u.IP, &u.LastIP, &u.Avatar, &u.Banner)
 	if err != nil {
 		return u, err, false
 	}

@@ -14,7 +14,7 @@ import (
 var (
 	db_name     = os.Getenv("DB_TABLE")
 	db_user     = os.Getenv("DB_USER")
-	db_password = os.Getenv("DB_PASSWORD")
+	db_password = "root" //os.Getenv("DB_PASSWORD")
 	db_addr     = os.Getenv("DB_ADDR")
 )
 

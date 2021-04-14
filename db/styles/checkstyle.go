@@ -75,7 +75,7 @@ func GetStyleSavedAll(id int64) ([]models.StyleSaved, error) {
 	}
 
 	// Consulta a la base de datos si existe un estilo con ese id correspondiente
-	rows, err := db.Query("SELECT id, style_id, user_id, love FROM style_save WHERE user_id = ?", id)
+	rows, err := db.Query("SELECT id, style_id, user_id, love FROM styles_save WHERE user_id=?", id)
 	if err != nil {
 		return s, err
 	}
@@ -84,6 +84,9 @@ func GetStyleSavedAll(id int64) ([]models.StyleSaved, error) {
 		var t models.StyleSaved
 		err = rows.Scan(&t.Id, &t.Style, &t.User, &t.Love)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				return s, errors.New("No tiene estilos guardados")
+			}
 			return s, err
 		}
 		s = append(s, t)

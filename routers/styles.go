@@ -135,6 +135,7 @@ func GetStyle(w http.ResponseWriter, r *http.Request) {
 			send = sendmessage{"No se encontró ningún estilo", false}
 		}
 		json.NewEncoder(w).Encode(send)
+		return
 	}
 
 	// Imprime el estilo por pantalla
@@ -164,6 +165,7 @@ func GetStylesUser(w http.ResponseWriter, r *http.Request) {
 			send = sendmessage{"No se encontró ningún estilo", false}
 		}
 		json.NewEncoder(w).Encode(send)
+		return
 	}
 
 	// Imprime el estilo por pantalla
@@ -229,6 +231,12 @@ func GetStylesSavedUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(style) < 2 {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"No se encontró ningún estilo", false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
 	// Imprime el estilo por pantalla
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(style)

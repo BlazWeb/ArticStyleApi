@@ -219,9 +219,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var u models.User
 	u, err := users.CheckUserLogin(user, pass)
 	if err != nil {
-		send := sendmessage{"El usuario y/o contraseña no existe", false}
-		json.NewEncoder(w).Encode(send)
 		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"El usuario y/o la contraseña es errónea", false}
+		json.NewEncoder(w).Encode(send)
 		return
 	}
 
