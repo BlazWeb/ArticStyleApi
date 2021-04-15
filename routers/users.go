@@ -72,14 +72,25 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json, multipart/form-data")
-	var t models.User
-	err := json.NewDecoder(r.Body).Decode(&t)
-	// Validación global de repuesta
-	if err != nil {
-		http.Error(w, "Error in request data: "+err.Error(), 400)
-		return
+	// Saco el Form
+	r.ParseMultipartForm(32 << 20)
+	user := r.PostFormValue("username")
+	email := r.PostFormValue("email")
+	pass := r.PostFormValue("password")
+	name := r.PostFormValue("name")
+	lastname := r.PostFormValue("lastname")
+	birthday := r.PostFormValue("birthday")
+	ip := r.PostFormValue("ip")
+	birth, _ := time.Parse("2006-01-02", birthday)
+	t := models.User{
+		Username: user,
+		Email:    email,
+		Password: pass,
+		Name:     name,
+		LastName: lastname,
+		Birthday: birth,
+		IP:       ip,
 	}
-
 	// Campos válidos
 	validSpace := regexp.MustCompile("^[A-Za-zñ ]*$")
 	valid := regexp.MustCompile("^[A0-Za9-zñ]*$")
@@ -87,6 +98,14 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if len(t.Username) < 4 {
 		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"Minimo cuatro carácteres", false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
+	age := time.Now().Year() - t.Birthday.Year()
+	if age < 16 {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"Solo mayores de 16", false}
 		json.NewEncoder(w).Encode(send)
 		return
 	}
@@ -110,7 +129,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(t.Password) < 6 {
 		w.WriteHeader(http.StatusBadRequest)
-		send := sendmessage{"The field Password is required", false}
+		send := sendmessage{"La contraseña debe de ser mayor a 6 carácteres", false}
 		json.NewEncoder(w).Encode(send)
 		return
 	}
@@ -185,7 +204,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insertar en Base de Datos
-	status, err := users.InsertRegisterUser(t.Username, t.Email, t.Name, t.LastName, t.Password)
+	status, err := users.InsertRegisterUser(t)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		send := sendmessage{"Error: " + err.Error(), false}
@@ -201,6 +220,8 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	// Finalización exitosa
 	w.WriteHeader(http.StatusCreated)
+	send := sendmessage{"Se ha creado correctamente", true}
+	json.NewEncoder(w).Encode(send)
 
 }
 

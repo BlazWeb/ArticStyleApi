@@ -5,20 +5,24 @@ import (
 
 	"github.com/Artic-Dev/ArticStyleApi-GO/db"
 	"github.com/Artic-Dev/ArticStyleApi-GO/helpers"
+	"github.com/Artic-Dev/ArticStyleApi-GO/models"
 )
 
-func InsertRegisterUser(user string, email string, name string, last_name string, password string) (bool, error) {
+func InsertRegisterUser(u models.User) (bool, error) {
 	register := time.Now()
 	db, err := db.GetDB()
 	if err != nil {
 		return false, err
 	}
+	// Add Gravatar
+	avatar := helpers.RegisterAvatar(u.Email)
+
 	// Encriptación de la contraseña
-	password, err = helpers.EncryptPassword(password)
+	password, err := helpers.EncryptPassword(u.Password)
 	if err != nil {
 		return false, err
 	}
 
-	_, err = db.Exec("INSERT INTO users (username, email, name, last_name, password, date_registered) VALUES (?, ?, ?, ?, ?, ?)", user, email, name, last_name, password, register)
+	_, err = db.Exec("INSERT INTO users (username, email, name, last_name, password, date_registered, avatar, birthday, ip, last_ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", u.Username, u.Email, u.Name, u.LastName, password, register, avatar, u.Birthday, u.IP, u.IP)
 	return true, err
 }

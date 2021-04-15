@@ -68,7 +68,7 @@ func GetDB() (*sql.DB, error) {
 	if db_addr == "" {
 		db_addr = "127.0.0.1"
 	}
-	s := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", db_user, db_password, db_addr, db_name)
+	s := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?&parseTime=true", db_user, db_password, db_addr, db_name)
 	fmt.Println(s)
 	db, err := sql.Open("mysql", s)
 
