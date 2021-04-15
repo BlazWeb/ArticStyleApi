@@ -94,6 +94,23 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// Campos válidos
 	validSpace := regexp.MustCompile("^[A-Za-zñ ]*$")
 	valid := regexp.MustCompile("^[A0-Za9-zñ]*$")
+
+	// Comprobación de si esta baneado
+	banned, ban, err := users.CheckBanIP(t.IP)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
+	if ban {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"Estás baneado de nuestro sistema por: " + banned.Reason + " expirará el: " + banned.Duration, false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
 	// Validación de datos recibidos
 	if len(t.Username) < 4 {
 		w.WriteHeader(http.StatusBadRequest)
@@ -252,6 +269,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	banned, ban, err := users.CheckBanUser(u.Id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
+	if ban {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"Estás baneado de nuestro sistema por: " + banned.Reason + " expirará el: " + banned.Duration, false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
 	jwtKey, err := jwt.TokenJWT(u)
 	if err != nil {
 		http.Error(w, "Ocurrió un error al intentar general el Token correspondiente "+err.Error(), 400)
@@ -275,6 +307,44 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func BanUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json, multipart/form-data")
+	// Saco el Form
+	r.ParseMultipartForm(32 << 20)
+	user := r.PostFormValue("username")
+	reason := r.PostFormValue("reason")
+	duration := r.PostFormValue("duration")
+	t := models.Ban{
+		Reason:   reason,
+		Duration: duration,
+	}
+	us, err, _ := users.CheckUserExists(user)
+	t.User = us.Id
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		if err == sql.ErrNoRows {
+			send = sendmessage{"No existe el usuario", false}
+		}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
+	status, err := users.BanUser(t, us.LastIP)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	if status {
+		w.WriteHeader(http.StatusCreated)
+		send := sendmessage{"Usuario: " + us.Username + " ha sido baneado con éxito hasta el: " + t.Duration, true}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+}
+
 func UserFollowers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	idAsString := mux.Vars(r)["id"]
@@ -292,7 +362,13 @@ func UserFollowers(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(send)
 		return
 	}
-	userF := users.CheckUserFollowers(id)
+	userF, err := users.CheckUserFollowers(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{"No tiene seguidores", false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
 	json.Marshal(userF)
 	json.NewEncoder(w).Encode(userF)
 	w.WriteHeader(http.StatusAccepted)
