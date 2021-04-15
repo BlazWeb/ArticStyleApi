@@ -23,6 +23,7 @@ func Controller() {
 	router.HandleFunc("/user/followers/{id}", routers.UserFollowers).Methods("GET")
 	router.HandleFunc("/user/{id}", routers.DelUser).Methods("DELETE")
 	router.HandleFunc("/auth", routers.Login).Methods("POST")
+	router.HandleFunc("/update-user/{id}", routers.EditUser).Methods("PUT")
 
 	// Rutas gestion de estilos creados
 	router.HandleFunc("/create-style/{iduser}", routers.RegisterStyle).Methods("POST")

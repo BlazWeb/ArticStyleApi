@@ -373,3 +373,99 @@ func UserFollowers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userF)
 	w.WriteHeader(http.StatusAccepted)
 }
+
+func EditUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json, multipart/form-data")
+	idAsString := mux.Vars(r)["id"]
+	id, err := helpers.StringToInt64(idAsString)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	r.ParseMultipartForm(30 << 15)
+	username := r.PostFormValue("username")
+	email := r.PostFormValue("email")
+	name := r.PostFormValue("name")
+	lastname := r.PostFormValue("lastname")
+	birthday := r.PostFormValue("birthday")
+	//file, handler, err := r.FormFile("banner")
+
+	birth, _ := time.Parse("2006-01-02", birthday)
+	user, err := users.CheckUserIDEspecial(id)
+	userl := user.Username
+
+	// Campos válidos
+	validSpace := regexp.MustCompile("^[A-Za-zñ ]*$")
+	valid := regexp.MustCompile("^[A0-Za9-zñ]*$")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+
+	if len(username) > 0 {
+		user.Username = username
+		check := valid.MatchString(user.Username)
+		if !check {
+			w.WriteHeader(http.StatusBadRequest)
+			send := sendmessage{"Carácteres inválidos", false}
+			json.NewEncoder(w).Encode(send)
+			return
+		}
+	}
+	if len(email) > 0 {
+		user.Email = email
+		res, err := helpers.CheckRealEmail(email)
+		if err != nil {
+			http.Error(w, "Context error in: "+err.Error(), 400)
+			return
+		}
+		if res != "valid" {
+			w.WriteHeader(http.StatusBadRequest)
+			send := sendmessage{"The email is fake", false}
+			json.NewEncoder(w).Encode(send)
+			return
+		}
+	}
+	if len(name) > 0 {
+		user.Name = name
+		check := validSpace.MatchString(user.Name)
+		if !check {
+			w.WriteHeader(http.StatusBadRequest)
+			send := sendmessage{"Carácteres inválidos", false}
+			json.NewEncoder(w).Encode(send)
+			return
+		}
+	}
+	if len(lastname) > 0 {
+		user.LastName = lastname
+		check := validSpace.MatchString(user.LastName)
+		if !check {
+			send := sendmessage{"Carácteres inválidos", false}
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(send)
+			return
+		}
+	}
+	if len(birthday) > 0 {
+		user.Birthday = birth
+	}
+	// Comprobación si hay existencia de carácteres inválidos
+
+	stats, err := users.PutUser(user, userl)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		send := sendmessage{err.Error(), false}
+		json.NewEncoder(w).Encode(send)
+		return
+	}
+	if stats {
+		w.WriteHeader(http.StatusAccepted)
+		send := sendmessage{"Se ha actualizado con éxito", true}
+		json.NewEncoder(w).Encode(send)
+	}
+
+}

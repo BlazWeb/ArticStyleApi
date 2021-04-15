@@ -15,7 +15,7 @@ func CheckBanIP(ip string) (models.Ban, bool, error) {
 		return b, false, err
 	}
 	time := time.Now()
-	row := db.QueryRow(`SELECT * FROM users_bans WHERE user_id=? AND duration > ?;`, ip, time)
+	row := db.QueryRow(`SELECT * FROM users_bans WHERE ip=? AND duration > ?;`, ip, time)
 	err = row.Scan(&b.Id, &b.User, &b.Ip, &b.Reason, &b.Date, &b.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
